@@ -39,10 +39,25 @@ export const verifyOTP = async (req, res, next) => {
     }
     const accessToken = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
     const refreshToken = jwt.sign({ email }, process.env.REFRESH_TOKEN_SECRET);
-    // Store refresh token in database
-    // Delete OTP from database
+    otpDoc.refreshTokens.push({ token: refreshToken });
+    otpDoc.otp = null;
+    await otpDoc.save();
     res.json({ accessToken, refreshToken });
   } catch (error) {
     next(error);
   }
 };
+
+
+export const refreshToken = async (req, res, next) => {
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) return res.sendStatus(400);
+      const user = await User.findOne({ 'refreshTokens.token': refreshToken });
+      if (!user) return res.sendStatus(403);
+      const accessToken = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+      res.json({ accessToken });
+    } catch (error) {
+      next(error);
+    }
+  }
