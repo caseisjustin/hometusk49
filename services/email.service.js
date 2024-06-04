@@ -1,12 +1,13 @@
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+var transporter = nodemailer.createTransport({
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: "fbe140f53c5e77",
+      pass: "9611bfb33669b9"
+    }
+  });
 
 export const sendOTP = async (email) => {
   const otp = generateOTP();
